@@ -19,13 +19,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public final int MY_PERMISSION_REQUEST_CONSTANT = 42;
     public boolean firstTransmission = true;
+    public byte currentSpeedLevel;
+    public byte currentSpeedPercentage;
+    public final byte MAX_SPEED_LEVEL = 5;
+
+    public final byte STEERING_ANGLE_MIN = 60;
+    public final byte STEERING_ANGLE_MAX = 110;
+    public final byte STEERING_ANGLE_IDLE = 85;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -44,11 +50,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         int REQUEST_ENABLE_BT = 42;
+        currentSpeedLevel = MAX_SPEED_LEVEL;
+        currentSpeedPercentage = 100;
 
         // Extrag referinte catre View-urile de input din interfata
         Button forwardButton, backwardButton, leftButton, rightButton;
         ImageButton honkImageButton;
         Switch lightsSwitch;
+        SeekBar speedSeekBar;
 
         forwardButton = (Button) findViewById(R.id.buttonForward);
         backwardButton = (Button) findViewById(R.id.buttonBackward);
@@ -56,8 +65,34 @@ public class MainActivity extends AppCompatActivity {
         rightButton = (Button) findViewById(R.id.buttonRight);
         lightsSwitch = (Switch) findViewById(R.id.switchLights);
         honkImageButton = (ImageButton) findViewById(R.id.imageButtonHonk);
+        speedSeekBar = (SeekBar) findViewById(R.id.seekBarSpeed);
 
         // Configurez handlerele pentru evenimentele asociate inputurilor
+
+        speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (!fromUser) return;
+
+                Log.d("MyDEBUG", "speedSeekBar.setOnSeekBarChangeListener modificare progress de catre user");
+                currentSpeedLevel = (byte)progress;
+
+                currentSpeedPercentage = (byte)(80 + currentSpeedLevel * 4);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         forwardButton.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 byte[] forwardCommand = new byte[2];
@@ -65,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
                 byte speedPercentage = 0;
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    speedPercentage = 100;
+                    speedPercentage = currentSpeedPercentage;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     speedPercentage = 0;
                 } else {
@@ -90,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
                 byte speedPercentage = 0;
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    speedPercentage = 100;
+                    speedPercentage = currentSpeedPercentage;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     speedPercentage = 0;
                 } else {
@@ -116,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
 
                 byte angle = 0;
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    angle = 52;
+                    angle = STEERING_ANGLE_MIN;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    angle = 90;
+                    angle = STEERING_ANGLE_IDLE;
                 } else {
                     Log.d("MyDEBUG", "leftButton.OnTouchListener() inutil");
                     return false;
@@ -142,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
 
                 byte angle = 0;
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    angle = 115;
+                    angle = STEERING_ANGLE_MAX;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    angle = 90;
+                    angle = STEERING_ANGLE_IDLE;
                 } else {
                     Log.d("MyDEBUG", "rightButton.OnTouchListener() inutil");
                     return false;
