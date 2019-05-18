@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Mac\'s BT Car Controller with Sliders</string>
+    <string name="switchLights">Lights</string>
+    <string name="textSteering">Steering</string>
+    <string name="textHonk">Honk</string>
+    <string name="textSpeed">Speed</string>
+</resources>
