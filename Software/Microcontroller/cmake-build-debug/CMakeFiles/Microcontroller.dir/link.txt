@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/Microcontroller.dir/main.c.o CMakeFiles/Microcontroller.dir/usart.c.o  -o Microcontroller 

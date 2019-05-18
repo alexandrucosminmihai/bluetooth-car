@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mac\'s BT Car Controller</string>
+    <string name="button_forward">Forward</string>
+    <string name="button_backward">Backward</string>
+    <string name="button_left">Left</string>
+    <string name="button_right">Right</string>
+    <string name="button_lights">Lights</string>
+</resources>
